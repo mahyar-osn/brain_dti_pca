@@ -86,7 +86,28 @@ def _reconstruct_subjects_from_pca(scores, components, mean, num):
     return np.dot(scores[0:num+1], components.T[0:num+1]) + mean
 
 
-def _main():
+def _save_exdata(data_array, pca_data_array, filename):
+    with open(filename+'.exdata', 'w') as exdata:
+        exdata.writelines(" Group name: DTI\n")
+        exdata.writelines(" #Fields= 2\n")
+        exdata.writelines(" coordinates, coordinate, rectangular cartesian, #Components=3\n")
+        exdata.writelines("   x.  Value index= 1, #Derivatives=0\n")
+        exdata.writelines("   y.  Value index= 2, #Derivatives=0\n")
+        exdata.writelines("   z.  Value index= 3, #Derivatives=0\n")
+        exdata.writelines(" vector, field, rectangular cartesian, #Components=3\n")
+        exdata.writelines("   1.  Value index= 4, #Derivatives=0\n")
+        exdata.writelines("   2.  Value index= 5, #Derivatives=0\n")
+        exdata.writelines("   3.  Value index= 6, #Derivatives=0\n")
+
+    for index, value in enumerate(data_array):
+        node = index + 1
+        with open(filename+'.exdata', 'a') as exdata:
+            exdata.writelines(" Node:     %s\n" % node)
+            exdata.writelines("   %s %s %s\n" % (data_array[index][0], data_array[index][1], data_array[index][2]))
+            exdata.writelines("   %s %s %s\n" % (pca_data_array[index][3], pca_data_array[index][4], pca_data_array[index][5]))
+
+
+def _main(subjectnum=None):
     # data_list = list()
     # for filename in config['data_filenames']:
     #     data = _read_file(os.path.join(config['data_dir'], filename))
@@ -102,10 +123,16 @@ def _main():
     for i in range(len(X[1])):
         X[:, i] = resampled_data[i].flatten()
 
-    return _perform_pca(X, subject_num=0, number_of_pcs_for_reconstruction=2)
+    return resampled_data, _perform_pca(X, subject_num=subjectnum, number_of_pcs_for_reconstruction=1)
 
 
 if __name__ == '__main__':
-    reconstructed_subject = _main()
+    for i in range(10):
+        print('Performing PCA for subject %s' % (i + 1))
+        rd, reconstructed_subject = _main(subjectnum=i)
+        exfilename = 'Subject_%s_PC_1' % (i + 1)
+        exfilepath = 'D:\\brain\\dataset\\Canada\\PCA\\' + exfilename
+        print('Saving Exdata...')
+        _save_exdata(rd[i], reconstructed_subject, exfilepath)
     print('done')
 
