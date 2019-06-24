@@ -30,7 +30,7 @@ def _save_image(lin, filename):
 
 if __name__ == '__main__':
 
-    dims = 5
+    dims = 50
     index = 0
 
     if len(sys.argv) > 1:
@@ -38,9 +38,8 @@ if __name__ == '__main__':
     if len(sys.argv) > 2:
         index = int(sys.argv[2])
 
-    X = np.load('testX.npy')
+    X = np.load('dataset.npy')
     print(X.shape)
-    # sys.exit()
     Xn, means = _normalize(X)
     Cov = np.matmul(np.transpose(Xn), Xn)
 
@@ -49,7 +48,6 @@ if __name__ == '__main__':
 
     Stf, Utf, Vtf = tf.svd(Covtf)
     print(Stf.shape)
-    # sys.exit()
     Vtf_T = tf.slice(Vtf, [0, 0], [X.shape[1], dims])
 
     Ttf = tf.matmul(Xtf, Vtf_T)
@@ -65,5 +63,5 @@ if __name__ == '__main__':
 
     # _show_image(X[index])
     # _show_image(R[index])
-    # _save_image(X[index], 'original')
-    _save_image(R[index], '5MODES')
+    _save_image(X[index], 'original')
+    _save_image(R[index], '%s_MODES' % dims)
