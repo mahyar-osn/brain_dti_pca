@@ -17,6 +17,11 @@ def _denormalize(Rn, means):
     return np.add(Rn, means)
 
 
+def _save_pc_subject(R, filename):
+    Rn = R.reshape(R.shape[0] // 6, 6)
+    np.savetxt(filename, Rn, fmt='%.4f', delimiter=',')
+
+
 def _show_image(lin):
     small_image = np.array(lin).reshape((28, 28))
     plt.imshow(small_image, cmap="gray")
@@ -24,7 +29,12 @@ def _show_image(lin):
 
 
 def _save_image(lin, filename):
+    print('Shape before save: ', lin.shape)
+
+    # linX = _retrieve_shape(lin)
     small_image = np.array(lin).reshape((28, 28))
+    print('Small image shape: ', small_image.shape)
+
     plt.imsave(filename + '.png', small_image)
 
 
@@ -38,8 +48,8 @@ if __name__ == '__main__':
     if len(sys.argv) > 2:
         index = int(sys.argv[2])
 
-    X = np.load('dataset.npy')
-    print(X.shape)
+    X = np.load('XArray.npy')
+    X = X.T
     Xn, means = _normalize(X)
     Cov = np.matmul(np.transpose(Xn), Xn)
 
@@ -61,7 +71,8 @@ if __name__ == '__main__':
 
     R = _denormalize(Rn, means)
 
-    # _show_image(X[index])
-    # _show_image(R[index])
-    _save_image(X[index], 'original')
-    _save_image(R[index], '%s_MODES' % dims)
+    filename = 'subject_%s_with_%s_modes' % (index, dims)
+    _save_pc_subject(R[index], filename)
+
+    # _save_image(X[index], 'original')
+    # _save_image(R[index], '%s_MODES' % dims)
