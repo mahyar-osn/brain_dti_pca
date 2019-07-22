@@ -73,6 +73,3 @@ if __name__ == '__main__':
 
     filename = 'subject_%s_with_%s_modes' % (index, dims)
     _save_pc_subject(R[index], filename)
-
-    # _save_image(X[index], 'original')
-    # _save_image(R[index], '%s_MODES' % dims)
